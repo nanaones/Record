@@ -1,4 +1,4 @@
-from flask import Flask, Response
+from flask import Flask, render_template, request, Response, jsonify
 import gevent
 import subprocess, os, signal
 import json
@@ -12,18 +12,16 @@ def _save_log(_row:str, _path:str):
     with open(file=_path, mode='a') as file:
         file.write(_row)
         
-def _get_child_processes_pid(parent_pid, sig=signal.SIGTERM):
-    ps_command = subprocess.Popen("ps -o pid --ppid %d --noheaders" % parent_pid, shell=True, stdout=subprocess.PIPE)
+def _get_child_processes_pid(sig=signal.SIGTERM):
+    ps_command = subprocess.Popen("ps -C gunicorn -o pid,pcpu,pmem,size,vsize", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     ps_output = ps_command.stdout.read()
     return ps_output
 
 @app.route("/")
 def gevent_tester():
-    _parent_pid = os.getppid()
-    ps_output = _get_child_processes_pid(parent_pid=_parent_pid)
-    _save_text = "hello, " + str((ps_output.strip()).decode('utf-8')) + "  \n"
+    ps_output = _get_child_processes_pid()
+    _save_text = "--- \n " + str((ps_output.strip()).decode('utf-8')) + "  \n"
     _save_log(_row=_save_text, _path=_LOGFILE_PATH)
-    # time.sleep(2)
     gevent.sleep(2)
     _headers = {
         'Access-Control-Allow-Origin' : '*',
