@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, Response, jsonify
+from flask import Flask, Response
 import gevent
 import subprocess, os, signal
 import json
@@ -13,7 +13,7 @@ def _save_log(_row:str, _path:str):
         file.write(_row)
         
 def _get_child_processes_pid(sig=signal.SIGTERM):
-    ps_command = subprocess.Popen("ps -C gunicorn -o pid,pcpu,pmem,size,vsize", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    ps_command = subprocess.Popen("ps -L -C gunicorn -o pid,pcpu,pmem,size,vsize", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     ps_output = ps_command.stdout.read()
     return ps_output
 
