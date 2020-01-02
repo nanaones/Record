@@ -6,7 +6,7 @@
 
 이를 확인하기 위해서 thread 옵션을 변경해가며 테스트를 해보았다.  
 테스트에 사용된   
-[test flask Server code](Python/gunicorn/flaskServer/main.py)
+[test flask Server code](https://github.com/nanaones/Record/blob/writing/Python/gunicorn/flaskServer/main.py)
 
 ---
 
