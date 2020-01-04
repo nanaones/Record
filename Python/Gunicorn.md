@@ -1,27 +1,24 @@
 # Gunicorn을 미들웨어로 사용하였을때, Gevent worker는 Thread 옵션이 필요할까요?
 
- [이 글에 담긴 질문에 대한 해결법을 찾아보기 위한 내용입니다. ](https://medium.com/@nara03050/nginx-%ED%99%98%EA%B2%BD%EC%97%90%EC%84%9C-python3%EB%A1%9C-back-end-%EA%B5%AC%EC%B6%95%ED%95%98%EA%B8%B0-gunicorn%EA%B3%BC-gevent%EC%95%8C%EC%95%84%EB%B3%B4%EA%B8%B0-473d73aa155a)
-
-
-이 내용을 알아보다가, 다음과 같은 내용을 확인하였다.
+ [오래전에 써 놓은 글에 질문이 달렸다.](https://medium.com/@nara03050/nginx-%ED%99%98%EA%B2%BD%EC%97%90%EC%84%9C-python3%EB%A1%9C-back-end-%EA%B5%AC%EC%B6%95%ED%95%98%EA%B8%B0-gunicorn%EA%B3%BC-gevent%EC%95%8C%EC%95%84%EB%B3%B4%EA%B8%B0-473d73aa155a)  
+질문의 내용에 대해서 알아보다가, Gunicorn GitHub Issue 에서 다음과 같은 내용을 확인하였다.
 
 https://github.com/benoitc/gunicorn/issues/1045#issuecomment-275678536
 
 `--thread` 옵션은 동기(Sync) 타입의 worker를 위한 옵션이라는 설명이다.
-
 따라서, 비동기(Async) 타입의 Worker인 Gevent Worker는 Thread 옵션의 영향을 받지 않는다.  
-
 
 ---
 
 # Gunicorn 의 worker 옵션은 사용자가 최적화 하기 나름입니다.
 
-위 내용을 확인하며 GitHub Issue를 살펴보다가 다음과같은 이슈를 확인하였다.   
+위 내용을 확인하며 GitHub Issue를 둘러 보다가 다음과같은 이슈를 확인하였다.   
 https://github.com/benoitc/gunicorn/issues/1045#issuecomment-269575459
 
-
-결과적으로 `--thread` 옵션은 gevent worker에서 의미가 없는것을 확인할 수 있었다.
-
+결국, 사용자가 thread를 사용할지, worker를 사용할지는 GIL에서 오는 오버헤드와 프로세스의 메모리 오버헤드중에서 선택하는 것이며 
+(동기, 비동기 Worker를 사용하였을때를 말 하는 것 으로 보인다.  
+동기Worker의 경우에는 thread옵션을 통해서 thread의 수를 결정하게 되는데, 파이썬에서는 GIL에 의해서 I/O 작업이 아닌 CPU 연산을 수행하는 작업은 GIL에 의해, lock이 실행되어, 동기와 마찬가지의 속도로 작업이 수행된다.  
+ worker를 사용하여 별도의 프로세스를 동작시키는 경우, GIL의 Lock()은 없어지지만, 메모리 오버헤드가 상당히 커지는 단점을 지니게 된다.) 결과적으로는 tradeoff 이기 때문에 어떤 worker를 사용할지, 몇 개의 worker를 사용할지 테스트 기반으로 결정해야한다는 내용 이었다.
 
 이를 확인하기 위해서 thread 옵션을 변경해가며 테스트를 해보았다.  
 테스트에 사용된 [test flask Server code](https://github.com/nanaones/Record/blob/master/Python/gunicorn/flaskServer/main.py)
@@ -72,6 +69,9 @@ https://github.com/benoitc/gunicorn/issues/1045#issuecomment-269575459
 
 
 ---
+
+#### Questions
+
 #### command
 ```
 $ gunicorn --access-logfile /log/logaccess_log --error-logfile /log/error_log -b 0.0.0.0:8000 main:app -w 2 --thread 4 -k gevent &
@@ -79,8 +79,9 @@ $ gunicorn --access-logfile /log/logaccess_log --error-logfile /log/error_log -b
 
 ### result
 
-#### $ ps -L -C gunicorn -o pid,pcpu,pmem,size,vsize 
+#### $ ps -L -C gunicorn -o pid,ppid,pcpu,pmem,size,vsize 
 
+[logFile](https://github.com/nanaones/Record/blob/master/Python/gunicorn/flaskServer/results/log/2020-01-03.log)
 ```log
 ~
 ---
