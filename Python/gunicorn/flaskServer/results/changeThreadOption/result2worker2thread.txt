@@ -1,0 +1,57 @@
+$ gunicorn --access-logfile /log/logaccess_log --error-logfile /log/error_log -b 0.0.0.0:8000 main:app -w 2 --threads 2 -k gevent
+
+$ ab -c 300 -n 1000 localhost:8000/
+
+
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking localhost (be patient)
+Completed 100 requests
+Completed 200 requests
+Completed 300 requests
+Completed 400 requests
+Completed 500 requests
+Completed 600 requests
+Completed 700 requests
+Completed 800 requests
+Completed 900 requests
+Completed 1000 requests
+Finished 1000 requests
+
+
+Server Software:        gunicorn/20.0.4
+Server Hostname:        localhost
+Server Port:            8000
+
+Document Path:          /
+Document Length:        20 bytes
+
+Concurrency Level:      300
+Time taken for tests:   16.450 seconds
+Complete requests:      1000
+Failed requests:        11
+   (Connect: 0, Receive: 0, Length: 11, Exceptions: 0)
+Total transferred:      181976 bytes
+HTML transferred:       19780 bytes
+Requests per second:    60.79 [#/sec] (mean)
+Time per request:       4934.933 [ms] (mean)
+Time per request:       16.450 [ms] (mean, across all concurrent requests)
+Transfer rate:          10.80 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0   13  21.5      0      68
+Processing:     0 4503 1468.4   3864    6783
+Waiting:        0 4502 1468.4   3863    6783
+Total:          0 4516 1483.5   3865    6783
+
+Percentage of the requests served within a certain time (ms)
+  50%   3865
+  66%   5712
+  75%   6096
+  80%   6211
+  90%   6561
+  95%   6675
+  98%   6736
+  99%   6739
+ 100%   6783 (longest request)
