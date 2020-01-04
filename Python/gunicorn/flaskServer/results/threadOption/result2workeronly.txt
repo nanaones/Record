@@ -2,7 +2,6 @@ ab -c 300 -n 1000 localhost:8000/
 
 gunicorn --access-logfile /log/logaccess_log --error-logfile /log/error_log -b 0.0.0.0:8000 main:app -w 2 -k gevent 
 
-
 This is ApacheBench, Version 2.3 <$Revision: 1807734 $>
 Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
 Licensed to The Apache Software Foundation, http://www.apache.org/
@@ -26,35 +25,36 @@ Server Hostname:        localhost
 Server Port:            8000
 
 Document Path:          /
-Document Length:        20 bytes
+Document Length:        286 bytes
 
 Concurrency Level:      300
-Time taken for tests:   14.191 seconds
+Time taken for tests:   15.422 seconds
 Complete requests:      1000
-Failed requests:        0
-Total transferred:      184000 bytes
-HTML transferred:       20000 bytes
-Requests per second:    70.47 [#/sec] (mean)
-Time per request:       4257.247 [ms] (mean)
-Time per request:       14.191 [ms] (mean, across all concurrent requests)
-Transfer rate:          12.66 [Kbytes/sec] received
+Failed requests:        616
+   (Connect: 0, Receive: 0, Length: 616, Exceptions: 0)
+Total transferred:      437595 bytes
+HTML transferred:       279991 bytes
+Requests per second:    64.84 [#/sec] (mean)
+Time per request:       4626.724 [ms] (mean)
+Time per request:       15.422 [ms] (mean, across all concurrent requests)
+Transfer rate:          27.71 [Kbytes/sec] received
 
 Connection Times (ms)
               min  mean[+/-sd] median   max
-Connect:        0   12  18.6      0      59
-Processing:  2152 3792 996.6   3502    5946
-Waiting:     2151 3791 996.6   3502    5945
-Total:       2152 3803 1008.3   3549    5997
+Connect:        0   11  17.2      1      57
+Processing:     0 4179 1439.1   3654    7314
+Waiting:        0 4178 1439.1   3653    7314
+Total:          0 4189 1448.7   3681    7351
 
 Percentage of the requests served within a certain time (ms)
-  50%   3549
-  66%   3697
-  75%   4127
-  80%   4621
-  90%   5610
-  95%   5895
-  98%   5977
-  99%   5987
- 100%   5997 (longest request)
+  50%   3681
+  66%   4774
+  75%   5247
+  80%   5641
+  90%   6202
+  95%   6253
+  98%   6351
+  99%   7340
+ 100%   7351 (longest request)
 
  

@@ -1,0 +1,59 @@
+ab -c 300 -n 1000 localhost:8000/
+
+gunicorn --access-logfile /log/logaccess_log --error-logfile /log/error_log -b 0.0.0.0:8000 main:app -w 2 --worker-connections 100 -k gevent
+
+
+This is ApacheBench, Version 2.3 <$Revision: 1807734 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking localhost (be patient)
+Completed 100 requests
+Completed 200 requests
+Completed 300 requests
+Completed 400 requests
+Completed 500 requests
+Completed 600 requests
+Completed 700 requests
+Completed 800 requests
+Completed 900 requests
+Completed 1000 requests
+Finished 1000 requests
+
+
+Server Software:        gunicorn/20.0.4
+Server Hostname:        localhost
+Server Port:            8000
+
+Document Path:          /
+Document Length:        181 bytes
+
+Concurrency Level:      300
+Time taken for tests:   8.304 seconds
+Complete requests:      1000
+Failed requests:        895
+   (Connect: 0, Receive: 0, Length: 895, Exceptions: 0)
+Total transferred:      109085 bytes
+HTML transferred:       58245 bytes
+Requests per second:    120.42 [#/sec] (mean)
+Time per request:       2491.281 [ms] (mean)
+Time per request:       8.304 [ms] (mean, across all concurrent requests)
+Transfer rate:          12.83 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0   18  14.2     17      53
+Processing:     1 1581 2446.8     19    7466
+Waiting:        0 1606 2460.3      0    7466
+Total:          1 1599 2456.3     36    7491
+
+Percentage of the requests served within a certain time (ms)
+  50%     36
+  66%     50
+  75%   4331
+  80%   4425
+  90%   4567
+  95%   7184
+  98%   7467
+  99%   7477
+ 100%   7491 (longest request)
