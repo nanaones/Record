@@ -1,6 +1,6 @@
-ab -c 300 -n 1000 localhost:8000/
+$ gunicorn --access-logfile /log/logaccess_log --error-logfile /log/error_log -b 0.0.0.0:8000 main:app -w 2 --worker-connections 100 -k gevent
 
-gunicorn --access-logfile /log/logaccess_log --error-logfile /log/error_log -b 0.0.0.0:8000 main:app -w 2 --worker-connections 100 -k gevent
+$ ab -c 300 -n 1000 localhost:8000/
 
 
 This is ApacheBench, Version 2.3 <$Revision: 1807734 $>

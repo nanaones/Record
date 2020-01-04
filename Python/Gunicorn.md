@@ -1,4 +1,4 @@
-## Gunicorn을 미들웨어로 사용하였을때, Gevent worker는 Thread 옵션이 필요할까요?
+# Gunicorn을 미들웨어로 사용하였을때, Gevent worker는 Thread 옵션이 필요할까요?
 
  [이 글에 담긴 질문에 대한 해결법을 찾아보기 위한 내용입니다. ](https://medium.com/@nara03050/nginx-%ED%99%98%EA%B2%BD%EC%97%90%EC%84%9C-python3%EB%A1%9C-back-end-%EA%B5%AC%EC%B6%95%ED%95%98%EA%B8%B0-gunicorn%EA%B3%BC-gevent%EC%95%8C%EC%95%84%EB%B3%B4%EA%B8%B0-473d73aa155a)
 
@@ -14,7 +14,7 @@ https://github.com/benoitc/gunicorn/issues/1045#issuecomment-275678536
 
 ---
 
-## Gunicorn의 worker 옵션은 사용자가 최적화 하기 나름입니다.
+# Gunicorn 의 worker 옵션은 사용자가 최적화 하기 나름입니다.
 
 위 내용을 확인하며 GitHub Issue를 살펴보다가 다음과같은 이슈를 확인하였다.   
 https://github.com/benoitc/gunicorn/issues/1045#issuecomment-269575459
@@ -28,11 +28,47 @@ https://github.com/benoitc/gunicorn/issues/1045#issuecomment-269575459
 
 ---
 
-1. `--thread` 옵션 테스트  
-    * 
-    *
-2. `--worker-connections` 옵션 테스트  
 
+1. `--thread` 옵션 테스트  
+
+    * [2 Worker 2 Thread](https://github.com/nanaones/Record/blob/master/Python/gunicorn/flaskServer/results/changeThreadOption/result2worker2thread.txt)  
+
+            Requests per second:    60.79 [#/sec] (mean)
+
+    * [2 Worker Only](https://github.com/nanaones/Record/blob/master/Python/gunicorn/flaskServer/results/changeThreadOption/result2workeronly.txt) 
+
+            Requests per second:    64.84 [#/sec] (mean)
+
+
+    * [4 Worker 2Thread](https://github.com/nanaones/Record/blob/master/Python/gunicorn/flaskServer/results/changeThreadOption/result4worker2thread.txt)  
+    
+            Requests per second:    38.92 [#/sec] (mean)
+
+
+2. `--worker-connections` 옵션 테스트  
+    * Default start command is  
+
+    ` $ gunicorn --access-logfile /log/logaccess_log --error-logfile /log/error_log -b 0.0.0.0:8000 main:app -w 2 --worker-connections [INT] -k gevent`  
+
+    * [`--worker-connections 100`](https://github.com/nanaones/Record/blob/master/Python/gunicorn/flaskServer/results/changeWorkerConnections/result2workerworkerconnections10.txt)
+
+            Requests per second:    94.01 [#/sec] (mean)
+
+
+    * [`--worker-connections 10`](https://github.com/nanaones/Record/blob/master/Python/gunicorn/flaskServer/results/changeWorkerConnections/result2workerworkerconnections100.txt)
+
+            Requests per second:    120.42 [#/sec] (mean)
+
+---
+#### result
+1. thread 옵션 테스트의 결과를 통해, thread 옵션은 성능에 영향을 끼치진 않는 것 으로 보인다.
+2. workerconnections 옵션의 값 변화 테스트 결과를 통해, thread 옵션을 통해 받은 결과가 사실상 각 프로세스에 메모리 오버헤드가 이루어져, 전체적인 성능저하가 있었음을 확인할 수 있었다.
+3. workerconnections 옵션또한 적정값을 찾는것이 성능 최적화의 방법이다.
+
+#### conclusion
+
+명확하고 신속하게 성능 최적화를 어떻게 해야 할 지 난감하다.  
+생각보다 성능에 영향을 끼치는 변수가 많으며, 이를 사용자가 직접 커스터마이징 해야한다.( 물론 찾아보면 누군가 만들었을 것 같다. )
 
 
 ---
