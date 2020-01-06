@@ -8,6 +8,27 @@ https://github.com/benoitc/gunicorn/issues/1045#issuecomment-275678536
 `--thread` 옵션은 동기(Sync) 타입의 worker를 위한 옵션이라는 설명이다.
 따라서, 비동기(Async) 타입의 Worker인 Gevent Worker는 Thread 옵션의 영향을 받지 않는다.  
 
+[Gevent Worker code](https://github.com/benoitc/gunicorn/blob/9c1438f013/gunicorn/workers/geventlet.py) 를 보면, Greenlet hread pool에서 gthread를 사용한다.
+
+찾아보니, Gevent와 같은 비동기 worker들은 AsyncWorker를 상속받으며, 
+[AsyncWorker](https://github.com/benoitc/gunicorn/blob/9c1438f013/gunicorn/workers/base_async.py)는 RequestHandler가 multithread 컨텍스트에 True 로 기록하여 전달한다.
+
+
+```python
+    def handle_request(self, listener_name, req, sock, addr):
+        request_start = datetime.now()
+        environ = {}
+        resp = None
+        try:
+            self.cfg.pre_request(self, req)
+            resp, environ = wsgi.create(req, sock, addr,
+                                        listener_name, self.cfg)
+            environ["wsgi.multithread"] = True
+            self.nr += 1
+            if self.alive and self.nr >= self.max_requests:
+```
+
+
 ---
 
 # Gunicorn 의 worker 옵션은 사용자가 최적화 하기 나름입니다.
