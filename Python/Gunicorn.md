@@ -11,10 +11,10 @@ https://github.com/benoitc/gunicorn/issues/1045#issuecomment-275678536
 ---
 
 
-[GeventletWorker code](https://github.com/benoitc/gunicorn/blob/9c1438f013/gunicorn/workers/geventlet.py) 를 보면, Greenlet hread pool에서 gthread를 사용한다.
+[gunicorn geventlet Worker code](https://github.com/benoitc/gunicorn/blob/9c1438f013/gunicorn/workers/geventlet.py) 를 보면, greenlet hread pool에서 gthread를 사용한다.
 - 각 worker는 각각 사용하는 기술이 다르며, 이는 worker의 성질에 따라 결정된다. 
 
-Gevent와 같은 비동기 worker들은 AsyncWorker를 상속받으며, 
+gevent와 같은 비동기 worker들은 AsyncWorker를 상속받으며, 
 [AsyncWorker](https://github.com/benoitc/gunicorn/blob/9c1438f013/gunicorn/workers/base_async.py)는 RequestHandler가 multithread 컨텍스트에 True 로 기록하여 전달한다.
 
 - 사실 비동기인거지, multithread로 구성되어있지 않은 Worker인데 설정상 multithread로 구분 되어있어서 혼동이 있었다.
@@ -48,7 +48,7 @@ https://github.com/benoitc/gunicorn/issues/1045#issuecomment-269575459
  worker를 사용하여 별도의 프로세스를 동작시키는 경우, GIL의 Lock()은 없어지지만, 메모리 오버헤드가 상당히 커지는 단점을 지니게 된다.) 결과적으로는 tradeoff 이기 때문에 어떤 worker를 사용할지, 몇 개의 worker를 사용할지 테스트 기반으로 결정해야한다는 내용 이었다.
 
 이를 확인하기 위해서 thread 옵션을 변경해가며 테스트를 해보았다.  
-테스트에 사용된 [test flask Server code](https://github.com/nanaones/Record/blob/master/Python/gunicorn/flaskServer/main.py)
+테스트에 사용된 [test flask server code 는 여기 있습니다. ](https://github.com/nanaones/Record/blob/master/Python/gunicorn/flaskServer/main.py)
 
 ---
 
@@ -84,15 +84,15 @@ https://github.com/benoitc/gunicorn/issues/1045#issuecomment-269575459
 ---
 #### result
 1. `--thread` 옵션
-- [gunicorn gthread Worker Code를 확인해 보면](https://github.com/benoitc/gunicorn/blob/9c1438f013/gunicorn/workers/gthread.py#L88), 처음 프로세스를 만들때, config 내의 threads 숫자대로 thread를 만드는걸 확인할 수 있다.
+- [gunicorn gthread worker code를 확인해 보면](https://github.com/benoitc/gunicorn/blob/9c1438f013/gunicorn/workers/gthread.py#L88), 처음 프로세스를 만들때, config 내의 threads 숫자대로 thread를 만드는걸 확인할 수 있다.
 
-- 하지만 [gunicorn Gevent Worker Code를 확인해 보면](https://github.com/benoitc/gunicorn/blob/9c1438f013/gunicorn/workers/ggevent.py), gthread Worker와 같은 threadPool 부분이 없다.  
+- 하지만 [gunicorn gevent worker code를 확인해 보면](https://github.com/benoitc/gunicorn/blob/9c1438f013/gunicorn/workers/ggevent.py), gthread Worker와 같은 threadPool 부분이 없다.  
 
 - thread 옵션 테스트의 결과와 코드를 통해 이해했지만, `--thread` 옵션은 성능에 영향을 끼치진 않는 것 으로 보인다.
 
 2. `--workerconnections` 옵션
 
-- [Gevent Worker Class Code](https://github.com/benoitc/gunicorn/blob/9c1438f013/gunicorn/workers/ggevent.py#L75)를 확인해 보면, gthread와는 달리 Pool에 `self.worker_connections`를 파라미터로 입력하는 것을 확인할 수 있다. 이는 gevent에서 greenlet이라는 microThread를 가지고오는 수를 지정하는 것 이며, 하나의 코루틴에서 수행될 양을 설정하는 부분이다.
+- [gevent worker code](https://github.com/benoitc/gunicorn/blob/9c1438f013/gunicorn/workers/ggevent.py#L75)를 확인해 보면, gthread와는 달리 Pool에 `self.worker_connections`를 파라미터로 입력하는 것을 확인할 수 있다. 이는 gevent에서 greenlet이라는 microThread를 가지고오는 수를 지정하는 것 이며, 하나의 코루틴에서 수행될 양을 설정하는 부분이다.
 
 3. workerconnections 옵션또한 적정값을 찾는것이 성능 최적화의 방법이다.
 
