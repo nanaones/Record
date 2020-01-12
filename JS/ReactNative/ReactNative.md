@@ -1,4 +1,14 @@
-## Screen 연결해서 App 만들기 
+## AndroidEmulators in Windows 10
 
-원하는 컴포넌트는 Build 할 줄 알지만, 이를 어떻게 엮어서 App을 만들어야 할 지 감이 안온다.
+1. AndroidStudio
+- Price: Free
+- Performence: Low  
 
+2. [Genymotion](https://www.genymotion.com)
+- Price: 
+![price](img/genymotion.png)  
+- Performence: ??
+
+3. [Visual Studio Emulator for Android](https://visualstudio.microsoft.com/ko/vs/msft-android-emulator/?rr=https%3A%2F%2Fgist.github.com%2F)  
+- Price: Free
+- Performence: Soso
