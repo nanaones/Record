@@ -9,6 +9,8 @@
 ### Python
 1. [Gunicorn](https://github.com/nanaones/Record/blob/master/Python/Gunicorn.md)
 
+2. [Psycopg](https://github.com/nanaones/Record/blob/master/Python/Psycopg.md)
+
 ### JavaScript
 
 #### 1. React-native
