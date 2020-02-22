@@ -7,13 +7,13 @@ flask 기반의 API Server 를 개발하다가 했던 실수2
 [main.py](https://github.com/nanaones/case/blob/master/main.py)  
 
 
-* python 의 순환참조
+* python 의 순환참조  
 FlaskSQLAlchemy 와 같은 ORM을 사용할 때 에는 순환참조를 조심해야한다. 
 
 ORM을 난생 처음 접해본 나는 이떄문에 큰 멘탈 & 시간 타격을 받았었는데, 발생하는 원리는 다음과 같다.
 
 
-1. Flask main.py 코드에서 db 객체 선언   
+1. Flask main.py 코드에서 db 객체 선언     
 in [main.py](https://github.com/nanaones/case/blob/master/main.py) 
 
     ```python
